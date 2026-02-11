@@ -1,0 +1,27 @@
+[package]
+name = "rust-cli-template"
+version = "0.1.0"
+edition = "2021"
+authors = ["Samuel Diaz <your.email@example.com>"]
+description = "A Rust CLI starter template"
+license = "MIT"
+repository = "https://github.com/1Samuel17/rust-cli-template"
+readme = "README.md"
+keywords = ["cli", "notebook", "rust", "standard-library"]
+categories = ["command-line-utilities"]
+
+[[bin]]
+name = "rust-cli-template"
+path = "src/main.rs"
+
+[lib]
+path = "src/lib/mod.rs"
+
+[dependencies]
+clap = { version = "4.5.57", features = ["derive"] }
+anyhow = "1.0.101"
+thiserror = "2.0.18"
+
+[dev-dependencies]
+assert_cmd = "2.1.2"
+predicates = "3.1.3"

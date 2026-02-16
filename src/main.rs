@@ -24,7 +24,12 @@ enum Commands {
         #[arg(short = 'n', long, help = "Name of the note to create")]
         note: Option<String>,
     },
-    Get,
+    Get {
+        #[arg(short = 'b', long, help = "Name of the notebook to get")]
+        notebook: Option<String>,
+        #[arg(short = 'n', long, help = "Name of the note to get")]
+        note: Option<String>,
+    },
 }
 
 fn main() -> Result<()> {
@@ -47,8 +52,15 @@ fn main() -> Result<()> {
                 // Here you would add logic to create and save the note
             }
         }
-        Some(Commands::Get) => {
-            println!("Getting .. ");
+        Some(Commands::Get { notebook, note }) => {
+            if let Some(notebook_name) = notebook {
+                println!("Getting notebook: {}", notebook_name);
+                // Here you would add logic to get the notebook
+            }
+            if let Some(note_name) = note {
+                println!("Getting note: {}", note_name);
+                // Here you would add logic to get the note
+            }
         }
         None => {
             println!("No subcommand was used. Use --help for more information.");

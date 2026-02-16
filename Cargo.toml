@@ -1,5 +1,5 @@
 [package]
-name = "rust-cli-template"
+name = "modnote"
 version = "0.1.0"
 edition = "2021"
 authors = ["Samuel Diaz <your.email@example.com>"]
@@ -11,7 +11,7 @@ keywords = ["cli", "notebook", "rust", "standard-library"]
 categories = ["command-line-utilities"]
 
 [[bin]]
-name = "rust-cli-template"
+name = "modnote"
 path = "src/main.rs"
 
 [lib]

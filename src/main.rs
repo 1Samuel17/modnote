@@ -3,7 +3,7 @@ use clap::{Parser, Subcommand};
 
 /// A template for Rust CLI applications
 #[derive(Parser, Debug)]
-#[command(name = "rust-cli-template")]
+#[command(name = "modnote")]
 #[command(version, about, long_about = None)]
 struct Cli {
     /// Subcommand to run

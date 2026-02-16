@@ -1,6 +1,6 @@
-# Rust CLI Template
+# Modnote
 
-A comprehensive template for building Rust command-line applications with best practices and modern tooling.
+A personal CLI tool that acts as a study reference notebook for learning Rust standard library modules, macros, types, and keywords
 
 ## Features
 
@@ -21,21 +21,7 @@ A comprehensive template for building Rust command-line applications with best p
 
 ### Installation
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/1Samuel17/rust-cli-template.git
-   cd rust-cli-template
-   ```
-
-2. Build the project:
-   ```bash
-   cargo build
-   ```
-
-3. Run the application:
-   ```bash
-   cargo run -- --name "World"
-   ```
+-
 
 ### Using as a Template
 

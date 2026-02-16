@@ -8,12 +8,12 @@ impl Notebooks {
     pub fn new(collection: String) -> Self {
         Self { collection, notebooks: Vec::new() }
     }
-    
+
     // add a notebook to the collection
     pub fn add_notebook(&mut self, notebook: Notebook) {
         self.notebooks.push(notebook);
     }
-    
+
     // get a notebook by name, return None if not found
     pub fn get_notebook(&self, name: &str) -> Option<&Notebook> {
         self.notebooks.iter().find(|notebook| notebook.name == name)

@@ -1,5 +1,6 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
+use modnote::notebook::{Notebooks, Notebook, Note};
 
 /// A template for Rust CLI applications
 #[derive(Parser, Debug)]
@@ -17,23 +18,37 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    Greet {
-        /// Name to greet
-        #[arg(short, long, default_value = "World")]
-        name: String,
+    New {
+        #[arg(short = 'b', long, help = "Name of the notebook to create")]
+        notebook: Option<String>,
+        #[arg(short = 'n', long, help = "Name of the note to create")]
+        note: Option<String>,
     },
+    Get,
 }
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
+    let notebooks = Notebooks::new("Master Collection".to_string());
+    let default_notebook = Notebook::default();
 
     if cli.verbose {
         println!("Running in verbose mode...");
     }
 
     match &cli.command {
-        Some(Commands::Greet { name }) => {
-            println!("Hello, {}!", name);
+        Some(Commands::New { notebook, note }) => {
+            if let Some(notebook_name) = notebook {
+                println!("Creating new notebook: {}", notebook_name);
+                // Here you would add logic to create and save the notebook
+            }
+            if let Some(note_name) = note {
+                println!("Creating new note: {}", note_name);
+                // Here you would add logic to create and save the note
+            }
+        }
+        Some(Commands::Get) => {
+            println!("Getting .. ");
         }
         None => {
             println!("No subcommand was used. Use --help for more information.");

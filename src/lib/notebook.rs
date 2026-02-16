@@ -1,51 +1,89 @@
-
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Notebooks {
-    collection: String,
-    notebooks: Vec<Notebook>,
+    pub collection: String,
+    pub notebooks: Vec<Notebook>,
 }
 
 impl Notebooks {
     pub fn new(collection: String) -> Self {
-        Self {
-            collection,
-            notebooks: Vec::new(),
-        }
+        Self { collection, notebooks: Vec::new() }
+    }
+    
+    // add a notebook to the collection
+    pub fn add_notebook(&mut self, notebook: Notebook) {
+        self.notebooks.push(notebook);
+    }
+    
+    // get a notebook by name, return None if not found
+    pub fn get_notebook(&self, name: &str) -> Option<&Notebook> {
+        self.notebooks.iter().find(|notebook| notebook.name == name)
+    }
+
+    // get all notebooks
+    pub fn get_all_notebooks(&self) -> &Vec<Notebook> {
+        &self.notebooks
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Notebook {
-    name: String,
-    notes: Vec<Note>,
+    pub name: String,
+    pub notes: Vec<Note>,
 }
 
 impl Notebook {
     // create new notebook, add notes later
     pub fn new(name: String) -> Self {
-        Self {
-            name,
-            notes: Vec::new(),
-        }
+        Self { name, notes: Vec::new() }
+    }
+
+    // add a note to the notebook
+    pub fn add_note(&mut self, note: Note) {
+        self.notes.push(note);
+    }
+
+    // get a note by topic, return None if not found
+    pub fn get_note(&self, topic: &str) -> Option<&Note> {
+        self.notes.iter().find(|note| note.topic == topic)
+    }
+
+    // get all notes
+    pub fn get_all_notes(&self) -> &Vec<Note> {
+        &self.notes
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Note {
-    topic: String,
-    description: String,
-    contents: Vec<String>,
-    tags: Vec<String>,
+    pub topic: String,
+    pub description: String,
+    pub contents: Vec<String>,
+    pub tags: Vec<String>,
 }
 
 impl Note {
     // create new note, add contents and tags later
     pub fn new(topic: String, description: String) -> Self {
-        Self {
-            topic,
-            description,
-            contents: Vec::new(),
-            tags: Vec::new(),
-        }
+        Self { topic, description, contents: Vec::new(), tags: Vec::new() }
+    }
+
+    // add contents to note
+    pub fn add_content(&mut self, content: String) {
+        self.contents.push(content);
+    }
+
+    // get all contents
+    pub fn get_all_contents(&self) -> &Vec<String> {
+        &self.contents
+    }
+
+    // get all tags
+    pub fn get_all_tags(&self) -> &Vec<String> {
+        &self.tags
+    }
+
+    // add tag to note
+    pub fn add_tag(&mut self, tag: String) {
+        self.tags.push(tag);
     }
 }

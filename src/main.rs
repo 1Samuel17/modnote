@@ -1,6 +1,6 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use modnote::notebook::{Notebooks, Notebook, Note};
+use modnote::notebook::{Note, Notebook, Notebooks};
 
 /// A template for Rust CLI applications
 #[derive(Parser, Debug)]
@@ -18,12 +18,14 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
+    // Create a new notebook or note
     New {
         #[arg(short = 'b', long, help = "Name of the notebook to create")]
         notebook: Option<String>,
         #[arg(short = 'n', long, help = "Name of the note to create")]
         note: Option<String>,
     },
+    // Get an existing notebook or note
     Get {
         #[arg(short = 'b', long, help = "Name of the notebook to get")]
         notebook: Option<String>,
@@ -34,8 +36,10 @@ enum Commands {
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
-    let notebooks = Notebooks::new("Master Collection".to_string());
-    let default_notebook = Notebook::default();
+    // Initialize the master collection of notebooks
+    let mut master_collection = Notebooks::new("Master Collection".to_string());
+    // Initialize a default notebook as a catch-all for unorganized notes
+    let mut default_notebook = Notebook::default();
 
     if cli.verbose {
         println!("Running in verbose mode...");
@@ -43,23 +47,29 @@ fn main() -> Result<()> {
 
     match &cli.command {
         Some(Commands::New { notebook, note }) => {
-            if let Some(notebook_name) = notebook {
-                println!("Creating new notebook: {}", notebook_name);
-                // Here you would add logic to create and save the notebook
+            if let Some(notebook) = notebook {
+                // Create a new notebook and add it to the master collection
+                let notebook = Notebook::new(notebook.clone());
+                master_collection.add_notebook(notebook.clone());
+                println!("Created new notebook: {:?}", notebook);
             }
             if let Some(note_name) = note {
-                println!("Creating new note: {}", note_name);
-                // Here you would add logic to create and save the note
+                // Create a new note and add it to the default notebook
+                let note_name = Note::new(note_name.clone(), "Description".to_string());
+                default_notebook.add_note(note_name.clone());
+                println!("Created new note: {:?}", note_name);
             }
         }
         Some(Commands::Get { notebook, note }) => {
-            if let Some(notebook_name) = notebook {
-                println!("Getting notebook: {}", notebook_name);
-                // Here you would add logic to get the notebook
+            if let Some(notebook) = notebook {
+                // Get the notebook from the master collection
+                master_collection.get_notebook(notebook);
+                println!("Getting notebook: {}", notebook);
             }
             if let Some(note_name) = note {
+                // Get the note from the default notebook
+                default_notebook.get_note(note_name);
                 println!("Getting note: {}", note_name);
-                // Here you would add logic to get the note
             }
         }
         None => {

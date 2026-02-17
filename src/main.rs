@@ -1,6 +1,7 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use modnote::notebook::{Note, Notebook, Notebooks};
+use modnote::{db::{set_db_options, check}, notebook::{Note, Notebook, Notebooks}};
+use sea_orm::Database;
 
 /// A template for Rust CLI applications
 #[derive(Parser, Debug)]
@@ -34,7 +35,19 @@ enum Commands {
     },
 }
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
+    // connect to the database
+    let db_options = set_db_options();
+    let db = Database::connect(db_options).await?;
+    check(db).await;
+
+    // init tracing
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        .with_test_writer()
+        .init();
+
     let cli = Cli::parse();
     // Initialize the master collection of notebooks
     let mut master_collection = Notebooks::new("Master Collection".to_string());

@@ -753,12 +753,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "glob"
-version = "0.3.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0cc23270f6e1808e30a928bdc84dea0b9b4136a8bc82338574f23baf47bbd280"
-
-[[package]]
 name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -981,15 +975,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "indoc"
-version = "2.0.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "79cf5c93f93228cf8efb3ba362535fb11199ac548a09ce117c9b1adc3030d706"
-dependencies = [
- "rustversion",
-]
-
-[[package]]
 name = "inherent"
 version = "1.0.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1096,15 +1081,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
 
 [[package]]
-name = "matchers"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d1525a2a28c7f4fa0fc98bb91ae755d1e2d1505079e05539e35bc876b5d65ae9"
-dependencies = [
- "regex-automata",
-]
-
-[[package]]
 name = "md-5"
 version = "0.10.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1141,7 +1117,6 @@ dependencies = [
  "log",
  "predicates",
  "sea-orm",
- "sea-orm-migration",
  "thiserror",
  "tokio",
  "tracing",
@@ -1732,23 +1707,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sea-orm-cli"
-version = "2.0.0-rc.32"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ccf34b457fb5f13de347eb2dfbbcb28cffe81167790ce469eedc3b4e3b9e8fcc"
-dependencies = [
- "chrono",
- "clap",
- "dotenvy",
- "glob",
- "indoc",
- "regex",
- "tracing",
- "tracing-subscriber",
- "url",
-]
-
-[[package]]
 name = "sea-orm-macros"
 version = "2.0.0-rc.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1762,22 +1720,6 @@ dependencies = [
  "sea-bae",
  "syn 2.0.114",
  "unicode-ident",
-]
-
-[[package]]
-name = "sea-orm-migration"
-version = "2.0.0-rc.32"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6273cc737e4cd44eeeb8180fc2e6d21f8cdd2a2eb08a9ed926597def4d444630"
-dependencies = [
- "async-trait",
- "clap",
- "dotenvy",
- "sea-orm",
- "sea-orm-cli",
- "sea-schema",
- "tracing",
- "tracing-subscriber",
 ]
 
 [[package]]
@@ -2512,14 +2454,10 @@ version = "0.3.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2f30143827ddab0d256fd843b7a66d164e9f271cfa0dde49142c5ca0ca291f1e"
 dependencies = [
- "matchers",
  "nu-ansi-term",
- "once_cell",
- "regex-automata",
  "sharded-slab",
  "smallvec",
  "thread_local",
- "tracing",
  "tracing-core",
  "tracing-log",
 ]

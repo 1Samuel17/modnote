@@ -11,6 +11,7 @@ path = "src/lib.rs"
 
 [dependencies]
 tokio = { version = "1", features = ["macros", "rt", "rt-multi-thread"] }
+serde = "1.0.228"
 
 [dependencies.sea-orm-migration]
 features = [

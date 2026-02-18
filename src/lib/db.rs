@@ -10,7 +10,7 @@ pub fn set_db_options() -> ConnectOptions {
         .acquire_timeout(Duration::from_secs(8))
         .idle_timeout(Duration::from_secs(8))
         .max_lifetime(Duration::from_secs(8))
-        .sqlx_logging(false) 
+        .sqlx_logging(false)
         .sqlx_logging_level(log::LevelFilter::Info)
         .set_schema_search_path("default_schema");
     opt

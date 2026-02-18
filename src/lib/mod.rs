@@ -1,2 +1,2 @@
-pub mod notebook;
 pub mod db;
+pub mod notebook;

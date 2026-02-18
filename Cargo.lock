@@ -1117,6 +1117,7 @@ dependencies = [
  "log",
  "predicates",
  "sea-orm",
+ "serde",
  "thiserror",
  "tokio",
  "tracing",

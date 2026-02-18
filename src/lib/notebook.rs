@@ -1,12 +1,14 @@
+
 #[derive(Debug, Default, Clone)]
-pub struct Notebooks {
-    pub collection: String,
+pub struct Collection {
+    pub collection_name: String,
+    pub description: String,
     pub notebooks: Vec<Notebook>,
 }
 
-impl Notebooks {
-    pub fn new(collection: String) -> Self {
-        Self { collection, notebooks: Vec::new() }
+impl Collection {
+    pub fn new(collection_name: String, description: String) -> Self {
+        Self { collection_name, description, notebooks: Vec::new() }
     }
 
     // add a notebook to the collection
@@ -58,7 +60,7 @@ pub struct Note {
     pub topic: String,
     pub description: String,
     pub contents: Vec<String>,
-    pub tags: Vec<String>,
+    pub tags: Vec<Tag>,
 }
 
 impl Note {
@@ -78,12 +80,23 @@ impl Note {
     }
 
     // get all tags
-    pub fn get_all_tags(&self) -> &Vec<String> {
+    pub fn get_all_tags(&self) -> &Vec<Tag> {
         &self.tags
     }
 
     // add tag to note
-    pub fn add_tag(&mut self, tag: String) {
+    pub fn add_tag(&mut self, tag: Tag) {
         self.tags.push(tag);
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+pub struct Tag {
+    pub name: String,
+}
+
+impl Tag {
+    pub fn new(name: String) -> Self {
+        Self { name }
     }
 }

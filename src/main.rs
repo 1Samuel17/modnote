@@ -1,6 +1,9 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use modnote::{db::{set_db_options, check}, notebook::{Note, Notebook, Notebooks}};
+use modnote::{
+    db::set_db_options,
+    notebook::{Note, Notebook, Collection},
+};
 use sea_orm::Database;
 
 /// A template for Rust CLI applications
@@ -39,18 +42,17 @@ enum Commands {
 async fn main() -> Result<()> {
     // connect to the database
     let db_options = set_db_options();
-    let db = Database::connect(db_options).await?;
-    check(db).await;
+    let _db = &Database::connect(db_options).await?;
+
+    // create database tables from entities
+    // db.get_schema_registry("modnote::entity::*").sync(db).await?;
 
     // init tracing
-    tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::DEBUG)
-        .with_test_writer()
-        .init();
+    tracing_subscriber::fmt().with_max_level(tracing::Level::DEBUG).with_test_writer().init();
 
     let cli = Cli::parse();
     // Initialize the master collection of notebooks
-    let mut master_collection = Notebooks::new("Master Collection".to_string());
+    let mut master_collection = Collection::new("Master Collection".to_string(), "Master Default Collection".to_string());
     // Initialize a default notebook as a catch-all for unorganized notes
     let mut default_notebook = Notebook::default();
 

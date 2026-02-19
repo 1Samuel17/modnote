@@ -1,3 +1,3 @@
-pub mod notebooks;
-pub mod notes;
-pub mod tags;
+pub mod notebook;
+pub mod note;
+pub mod tag;

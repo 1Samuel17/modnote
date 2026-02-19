@@ -1,33 +1,54 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use modnote::db::set_db_options;
+use modnote::{crud::notebook::create_notebook, db::set_db_options};
 use sea_orm::Database;
+use tracing_subscriber;
+use std::env;
 
-/// A template for Rust CLI applications
+// A template for Rust CLI applications
 #[derive(Parser, Debug)]
 #[command(name = "modnote")]
 #[command(version, about, long_about = None)]
 struct Cli {
-    /// Subcommand to run
+    // Subcommand to run
     #[command(subcommand)]
     command: Option<Commands>,
+
+    // Create
+    #[arg(short, long, help = "Set flag to create a new notebook or note")]
+    new: bool,
+
+    // Read
+    #[arg(short, long, help = "Set flag to get an existing notebook or note")]
+    get: bool,
+
+    // Update
+    #[arg(short, long, help = "Set flag to update an existing notebook or note")]
+    up: bool,
+
+    // Delete
+    #[arg(short, long, help = "Set flag to delete an existing notebook or note")]
+    del: bool,
+
 }
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    // Create a new notebook or note
-    New {
-        #[arg(short = 'b', long, help = "Name of the notebook to create")]
-        notebook: Option<String>,
-        #[arg(short = 'n', long, help = "Name of the note to create")]
-        note: Option<String>,
+    // Notebook subcommand for creating, getting, updating, or deleting notebooks
+    Notebook {
+        #[arg(short = 't', long = "title", help = "Provide the title of the notebook")]
+        title: String,
+
+        #[arg(short = 'd', long, help = "Provide a short description of the notebook")]
+        description: Option<String>,
     },
-    // Get an existing notebook or note
-    Get {
-        #[arg(short = 'b', long, help = "Name of the notebook to get")]
-        notebook: Option<String>,
-        #[arg(short = 'n', long, help = "Name of the note to get")]
-        note: Option<String>,
+    // Note subcommand for creating, getting, updating, or deleting notes
+    Note {
+        #[arg(short = 't', long = "title", help = "Provide the title of the note to get")]
+        title: String,
+
+        #[arg(short = 'c', long = "content", help = "Add note content")]
+        content: Option<String>,
     },
 }
 
@@ -35,32 +56,53 @@ enum Commands {
 async fn main() -> Result<()> {
     // connect to the database
     let db_options = set_db_options();
-    let _db = &Database::connect(db_options).await?;
+    let db = &Database::connect(db_options).await?;
 
-    // init tracing
+    // initialize tracing
     tracing_subscriber::fmt().with_max_level(tracing::Level::DEBUG).with_test_writer().init();
 
     let cli = Cli::parse();
 
     match &cli.command {
-        Some(Commands::New { notebook, note }) => {
-            if let Some(notebook) = notebook {
-                println!("Created new notebook: {:?}", notebook);
-            }
-            if let Some(note_name) = note {
-                println!("Created new note: {:?}", note_name);
+        Some(Commands::Notebook {title, description }) => {
+            let args = env::args();
+            match args {
+                arg if cli.new => {
+                    create_notebook(db, title, description).await?;
+                    println!("successfully added new notebook");
+                }
+                arg if cli.get => {
+                    println!("get flag checked")
+                }
+                arg if cli.up => {
+                    println!("up flag checked")
+                }
+                arg if cli.del => {
+                    println!("del flag checked")
+                }
+                _ => {()}
             }
         }
-        Some(Commands::Get { notebook, note }) => {
-            if let Some(notebook) = notebook {
-                println!("Getting notebook: {}", notebook);
-            }
-            if let Some(note_name) = note {
-                println!("Getting note: {}", note_name);
+        Some(Commands::Note {title, content }) => {
+            let args = env::args();
+            match args {
+                arg if cli.new => {
+                    println!("new flag checked");
+                }
+                arg if cli.get => {
+                    println!("get flag checked")
+                }
+                arg if cli.up => {
+                    println!("up flag checked")
+                }
+                arg if cli.del => {
+                    println!("del flag checked")
+                }
+                _ => {()}
             }
         }
         None => {
-            println!("No subcommand was used. Use --help for more information.");
+            println!("No action argument. Use --help for more information.");
         }
     }
 

@@ -1,2 +1,3 @@
 pub mod db;
-pub mod notebook;
+pub mod entities;
+pub mod crud;

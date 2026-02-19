@@ -1,4 +1,3 @@
-
 #[derive(Debug, Default, Clone)]
 pub struct Collection {
     pub collection_name: String,

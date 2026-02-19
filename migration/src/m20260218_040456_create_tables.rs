@@ -7,19 +7,6 @@ pub struct Migration;
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
 
-        // create collections table
-        manager
-            .create_table(
-                Table::create()
-                    .table("Collections")
-                    .if_not_exists()
-                    .col(pk_auto("id"))
-                    .col(string("collection_name"))
-                    .col(string("description"))
-                    .to_owned(),
-            )
-            .await?;
-
         // create notebooks table
         manager
             .create_table(
@@ -54,33 +41,6 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(pk_auto("id"))
                     .col(string("tag_name"))
-                    .to_owned(),
-            )
-            .await?;
-
-        // create the relationship tables: Collection -> Notebooks (collection has many notebooks)
-        manager
-            .create_table(
-                Table::create()
-                    .table("CollectionNotebooks")
-                    .if_not_exists()
-                    .col(pk_auto("id"))
-                    .col(integer("collection_id"))
-                    .col(integer("notebook_id"))
-                    .foreign_key(
-                        ForeignKey::create()
-                            .name("fk-collectionnotebooks-collection_id")
-                            .from(Alias::new("CollectionNotebooks"), Alias::new("collection_id"))
-                            .to(Alias::new("Collections"), Alias::new("id"))
-                            .on_delete(ForeignKeyAction::Cascade),
-                    )
-                    .foreign_key(
-                        ForeignKey::create()
-                            .name("fk-collectionnotebooks-notebook_id")
-                            .from(Alias::new("CollectionNotebooks"), Alias::new("notebook_id"))
-                            .to(Alias::new("Notebooks"), Alias::new("id"))
-                            .on_delete(ForeignKeyAction::Cascade),
-                    )
                     .to_owned(),
             )
             .await?;
@@ -142,28 +102,11 @@ impl MigrationTrait for Migration {
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-
-        manager
-            .drop_table(Table::drop().table("Collections").to_owned())
-            .await?;
-        manager
-            .drop_table(Table::drop().table("Notebooks").to_owned())
-            .await?;
-        manager
-            .drop_table(Table::drop().table("Notes").to_owned())
-            .await?;
-        manager
-            .drop_table(Table::drop().table("Tags").to_owned())
-            .await?;
-        manager
-            .drop_table(Table::drop().table("CollectionNotebooks").to_owned())
-            .await?;
-        manager
-            .drop_table(Table::drop().table("NotebookNotes").to_owned())
-            .await?;
-        manager
-            .drop_table(Table::drop().table("NoteTags").to_owned())
-            .await?;
+        manager.drop_table(Table::drop().table("Notebooks").to_owned()).await?;
+        manager.drop_table(Table::drop().table("Notes").to_owned()).await?;
+        manager.drop_table(Table::drop().table("Tags").to_owned()).await?;
+        manager.drop_table(Table::drop().table("NotebookNotes").to_owned()).await?;
+        manager.drop_table(Table::drop().table("NoteTags").to_owned()).await?;
         Ok(())
     }
 }

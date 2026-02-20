@@ -1,8 +1,9 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use modnote::{crud::notebook::create_notebook, db::set_db_options};
+use modnote::{
+    crud::notebook::create_notebook, crud::notebook::delete_notebook, db::set_db_options,
+};
 use sea_orm::Database;
-use tracing_subscriber;
 
 // A template for Rust CLI applications
 #[derive(Parser, Debug)]
@@ -16,22 +17,22 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    // crud action args: NEW (create)
+    /// Create a new notebook, note or tag
     New {
         #[command(subcommand)]
         subcommands: Option<Subcommands>,
     },
-    // crud action args: GET (read)
+    /// Get notebook(s), note(s), or tag(s)
     Get {
         #[command(subcommand)]
         subcommands: Option<Subcommands>,
     },
-    // crud action args: UP (update)
+    /// Update notebook, note, or tag
     Up {
         #[command(subcommand)]
         subcommands: Option<Subcommands>,
     },
-    // crud action args: DEL (delete)
+    /// Delete notebook, note or tag
     Del {
         #[command(subcommand)]
         subcommands: Option<Subcommands>,
@@ -40,21 +41,28 @@ enum Commands {
 
 #[derive(Subcommand, Debug)]
 enum Subcommands {
+    /// Create a new notebook
     Notebook {
+        /// name of the notebook
         #[arg(short, long, help = "Name of notebook")]
         name: String,
-
-        #[arg(short, long, help = "Description of notebook")]
+        /// description of the notebook
+        #[arg(short, long, help = "Description of notebook", default_value = "")]
         desc: String,
     },
+    /// Create a new note
     Note {
+        /// name of the note
         #[arg(short, long, help = "Name of note")]
         name: String,
 
-        #[arg(short, long, help = "Content of note")]
+        /// content of the note
+        #[arg(short, long, help = "Content of note", default_value = "")]
         content: String,
     },
+    /// Create a new tag
     Tag {
+        /// name of the tag
         #[arg(short, long, help = "Name of tag")]
         name: String,
     },
@@ -87,7 +95,7 @@ async fn main() -> Result<()> {
         // Parse "Get" Command
         Some(Commands::Get { subcommands }) => match subcommands.as_ref().unwrap() {
             Subcommands::Notebook { name, desc } => {
-                create_notebook(db, name, desc).await?;
+                println!("Note: {}, {}", name, desc)
             }
             Subcommands::Note { name, content } => {
                 println!("Note: {}, {}", name, content)
@@ -99,7 +107,7 @@ async fn main() -> Result<()> {
         // Parse "Up" Command
         Some(Commands::Up { subcommands }) => match subcommands.as_ref().unwrap() {
             Subcommands::Notebook { name, desc } => {
-                create_notebook(db, name, desc).await?;
+                println!("Note: {}, {}", name, desc)
             }
             Subcommands::Note { name, content } => {
                 println!("Note: {}, {}", name, content)
@@ -110,8 +118,8 @@ async fn main() -> Result<()> {
         },
         // Parse "Del" Command
         Some(Commands::Del { subcommands }) => match subcommands.as_ref().unwrap() {
-            Subcommands::Notebook { name, desc } => {
-                create_notebook(db, name, desc).await?;
+            Subcommands::Notebook { name, desc: _ } => {
+                delete_notebook(db, name).await?;
             }
             Subcommands::Note { name, content } => {
                 println!("Note: {}, {}", name, content)

@@ -1,5 +1,10 @@
-use crate::entities::notebooks;
-use sea_orm::{ActiveModelTrait, ActiveValue::NotSet, DbConn, DbErr, Set};
+use crate::entities::notebooks::{self};
+use crate::entities::prelude::Notebooks;
+use sea_orm::{
+    ActiveModelTrait,
+    ActiveValue::{NotSet, Set},
+    ColumnTrait, DbConn, DbErr, EntityTrait, ModelTrait, QueryFilter,
+};
 
 // Create
 pub async fn create_notebook(
@@ -21,3 +26,12 @@ pub async fn create_notebook(
 // Update
 
 // Delete
+pub async fn delete_notebook(db: &DbConn, name: &String) -> Result<String, DbErr> {
+    let book: Option<notebooks::Model> = Notebooks::find()
+        .filter(notebooks::Column::NotebookName.eq(name.to_owned()))
+        .one(db)
+        .await?;
+    let book: notebooks::Model = book.unwrap();
+    book.delete(db).await?;
+    Ok("Success".to_string())
+}

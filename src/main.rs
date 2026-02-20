@@ -3,7 +3,6 @@ use clap::{Parser, Subcommand};
 use modnote::{crud::notebook::create_notebook, db::set_db_options};
 use sea_orm::Database;
 use tracing_subscriber;
-use std::env;
 
 // A template for Rust CLI applications
 #[derive(Parser, Debug)]
@@ -13,42 +12,51 @@ struct Cli {
     // Subcommand to run
     #[command(subcommand)]
     command: Option<Commands>,
-
-    // Create
-    #[arg(short, long, help = "Set flag to create a new notebook or note")]
-    new: bool,
-
-    // Read
-    #[arg(short, long, help = "Set flag to get an existing notebook or note")]
-    get: bool,
-
-    // Update
-    #[arg(short, long, help = "Set flag to update an existing notebook or note")]
-    up: bool,
-
-    // Delete
-    #[arg(short, long, help = "Set flag to delete an existing notebook or note")]
-    del: bool,
-
 }
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    // Notebook subcommand for creating, getting, updating, or deleting notebooks
-    Notebook {
-        #[arg(short = 't', long = "title", help = "Provide the title of the notebook")]
-        title: String,
-
-        #[arg(short = 'd', long, help = "Provide a short description of the notebook")]
-        description: Option<String>,
+    // crud action args: NEW (create)
+    New {
+        #[command(subcommand)]
+        subcommands: Option<Subcommands>,
     },
-    // Note subcommand for creating, getting, updating, or deleting notes
-    Note {
-        #[arg(short = 't', long = "title", help = "Provide the title of the note to get")]
-        title: String,
+    // crud action args: GET (read)
+    Get {
+        #[command(subcommand)]
+        subcommands: Option<Subcommands>,
+    },
+    // crud action args: UP (update)
+    Up {
+        #[command(subcommand)]
+        subcommands: Option<Subcommands>,
+    },
+    // crud action args: DEL (delete)
+    Del {
+        #[command(subcommand)]
+        subcommands: Option<Subcommands>,
+    },
+}
 
-        #[arg(short = 'c', long = "content", help = "Add note content")]
-        content: Option<String>,
+#[derive(Subcommand, Debug)]
+enum Subcommands {
+    Notebook {
+        #[arg(short, long, help = "Name of notebook")]
+        name: String,
+
+        #[arg(short, long, help = "Description of notebook")]
+        desc: String,
+    },
+    Note {
+        #[arg(short, long, help = "Name of note")]
+        name: String,
+
+        #[arg(short, long, help = "Content of note")]
+        content: String,
+    },
+    Tag {
+        #[arg(short, long, help = "Name of tag")]
+        name: String,
     },
 }
 
@@ -64,43 +72,54 @@ async fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
-        Some(Commands::Notebook {title, description }) => {
-            let args = env::args();
-            match args {
-                arg if cli.new => {
-                    create_notebook(db, title, description).await?;
-                    println!("successfully added new notebook");
-                }
-                arg if cli.get => {
-                    println!("get flag checked")
-                }
-                arg if cli.up => {
-                    println!("up flag checked")
-                }
-                arg if cli.del => {
-                    println!("del flag checked")
-                }
-                _ => {()}
+        // Parse "New" Command
+        Some(Commands::New { subcommands }) => match subcommands.as_ref().unwrap() {
+            Subcommands::Notebook { name, desc } => {
+                create_notebook(db, name, desc).await?;
             }
-        }
-        Some(Commands::Note {title, content }) => {
-            let args = env::args();
-            match args {
-                arg if cli.new => {
-                    println!("new flag checked");
-                }
-                arg if cli.get => {
-                    println!("get flag checked")
-                }
-                arg if cli.up => {
-                    println!("up flag checked")
-                }
-                arg if cli.del => {
-                    println!("del flag checked")
-                }
-                _ => {()}
+            Subcommands::Note { name, content } => {
+                println!("Note: {}, {}", name, content)
             }
-        }
+            Subcommands::Tag { name } => {
+                println!("Tag: {}", name)
+            }
+        },
+        // Parse "Get" Command
+        Some(Commands::Get { subcommands }) => match subcommands.as_ref().unwrap() {
+            Subcommands::Notebook { name, desc } => {
+                create_notebook(db, name, desc).await?;
+            }
+            Subcommands::Note { name, content } => {
+                println!("Note: {}, {}", name, content)
+            }
+            Subcommands::Tag { name } => {
+                println!("Tag: {}", name)
+            }
+        },
+        // Parse "Up" Command
+        Some(Commands::Up { subcommands }) => match subcommands.as_ref().unwrap() {
+            Subcommands::Notebook { name, desc } => {
+                create_notebook(db, name, desc).await?;
+            }
+            Subcommands::Note { name, content } => {
+                println!("Note: {}, {}", name, content)
+            }
+            Subcommands::Tag { name } => {
+                println!("Tag: {}", name)
+            }
+        },
+        // Parse "Del" Command
+        Some(Commands::Del { subcommands }) => match subcommands.as_ref().unwrap() {
+            Subcommands::Notebook { name, desc } => {
+                create_notebook(db, name, desc).await?;
+            }
+            Subcommands::Note { name, content } => {
+                println!("Note: {}, {}", name, content)
+            }
+            Subcommands::Tag { name } => {
+                println!("Tag: {}", name)
+            }
+        },
         None => {
             println!("No action argument. Use --help for more information.");
         }

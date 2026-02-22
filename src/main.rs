@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use modnote::{
-    crud::notebook::create_notebook, crud::notebook::delete_notebook, db::set_db_options,
+    crud::notebook::*, db::set_db_options,
 };
 use sea_orm::Database;
 
@@ -28,14 +28,17 @@ enum Commands {
         subcommands: Option<Subcommands>,
     },
     /// Update notebook, note, or tag
-    Up {
+    Update {
         #[command(subcommand)]
         subcommands: Option<Subcommands>,
     },
     /// Delete notebook, note or tag
-    Del {
+    Delete {
         #[command(subcommand)]
         subcommands: Option<Subcommands>,
+
+        // #[arg(short, long, help = "Get all notebooks, notes, or tags")]
+        // all: Option<bool>,
     },
 }
 
@@ -45,28 +48,29 @@ enum Subcommands {
     Notebook {
         /// name of the notebook
         #[arg(short, long, help = "Name of notebook")]
-        name: String,
+        name: Option<String>,
         /// description of the notebook
-        #[arg(short, long, help = "Description of notebook", default_value = "")]
-        desc: String,
+        #[arg(short, long, help = "Description of notebook")]
+        desc: Option<String>,
     },
     /// Create a new note
     Note {
         /// name of the note
         #[arg(short, long, help = "Name of note")]
-        name: String,
+        name: Option<String>,
 
         /// content of the note
-        #[arg(short, long, help = "Content of note", default_value = "")]
-        content: String,
+        #[arg(short, long, help = "Content of note")]
+        content: Option<String>,
     },
     /// Create a new tag
     Tag {
         /// name of the tag
         #[arg(short, long, help = "Name of tag")]
-        name: String,
+        name: Option<String>,
     },
 }
+
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -80,54 +84,87 @@ async fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
+
         // Parse "New" Command
         Some(Commands::New { subcommands }) => match subcommands.as_ref().unwrap() {
             Subcommands::Notebook { name, desc } => {
-                create_notebook(db, name, desc).await?;
+                if name.is_none() || desc.is_none() { println!("\nerror: name and description required to create new notebook. use --help for correct usage\n")}
+                else { 
+                    let name = name.to_owned().unwrap(); let desc = desc.to_owned().unwrap();
+                    create_notebook(db, name, desc).await?;
+                    println!("Successfully created notebook");
+                }
             }
-            Subcommands::Note { name, content } => {
-                println!("Note: {}, {}", name, content)
+            Subcommands::Note { name: _, content: _ } => {
+                println!("Note: ");
+                todo!("Implement create note functionality")
             }
-            Subcommands::Tag { name } => {
-                println!("Tag: {}", name)
+            Subcommands::Tag { name: _ } => {
+                println!("Tag: ");
+                todo!("Implement create tag functionality")
             }
         },
+
         // Parse "Get" Command
         Some(Commands::Get { subcommands }) => match subcommands.as_ref().unwrap() {
-            Subcommands::Notebook { name, desc } => {
-                println!("Note: {}, {}", name, desc)
-            }
-            Subcommands::Note { name, content } => {
-                println!("Note: {}, {}", name, content)
-            }
-            Subcommands::Tag { name } => {
-                println!("Tag: {}", name)
-            }
-        },
-        // Parse "Up" Command
-        Some(Commands::Up { subcommands }) => match subcommands.as_ref().unwrap() {
-            Subcommands::Notebook { name, desc } => {
-                println!("Note: {}, {}", name, desc)
-            }
-            Subcommands::Note { name, content } => {
-                println!("Note: {}, {}", name, content)
-            }
-            Subcommands::Tag { name } => {
-                println!("Tag: {}", name)
-            }
-        },
-        // Parse "Del" Command
-        Some(Commands::Del { subcommands }) => match subcommands.as_ref().unwrap() {
             Subcommands::Notebook { name, desc: _ } => {
-                delete_notebook(db, name).await?;
+                if name.is_none() {
+                    let notebooks = get_all_notebooks(db).await?;
+                    for notebook in notebooks {
+                    println!("{:?}", notebook)
+                    }
+                }
+                 else {
+                    let notebook = get_notebook_by_name(db, name.to_owned().unwrap_or_default()).await?;
+                    println!("{:?}", notebook)
+                }
             }
-            Subcommands::Note { name, content } => {
-                println!("Note: {}, {}", name, content)
+            Subcommands::Note { name: _ , content: _ } => {
+                println!("Note: ");
+                todo!("Implement get note functionality")
             }
-            Subcommands::Tag { name } => {
-                println!("Tag: {}", name)
+            Subcommands::Tag { name: _ } => {
+                println!("Tag: ");
+                todo!("Implement get tag functionality")
             }
         },
+
+        // Parse "Up" Command
+        Some(Commands::Update { subcommands }) => match subcommands.as_ref().unwrap() {
+            Subcommands::Notebook { name, desc: _ } => {
+                update_notebook_by_name(db, name.to_owned()).await?;
+            }
+            Subcommands::Note { name: _, content: _ } => {
+                println!("Note: ")
+            }
+            Subcommands::Tag { name: _ } => {
+                println!("Tag: ")
+            }
+        },
+
+        // // Parse "Del" Command
+        Some(Commands::Delete { subcommands }) => match subcommands.as_ref().unwrap() {
+            Subcommands::Notebook { name , desc: _ } => {
+                if name.is_none() {
+                    delete_all_notebooks(db).await?;
+                    println!("Successfully deleted all notebooks");
+                }
+                 else {
+                    delete_notebook_by_name(db, name).await?;
+                    println!("Successfully deleted notebook with name: {}", name.as_ref().unwrap_or(&"".to_string()));
+                }
+            }
+            Subcommands::Note { name: _ , content: _ } => {
+                println!("Note: ");
+                todo!("Implement delete note functionality")
+            }
+            Subcommands::Tag { name: _ } => {
+                println!("Tag: ");
+                todo!("Implement delete tag functionality")
+            }
+        },
+
+        // Handle no command given
         None => {
             println!("No action argument. Use --help for more information.");
         }

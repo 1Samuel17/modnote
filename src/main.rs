@@ -1,8 +1,6 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use modnote::{
-    crud::notebook::*, db::set_db_options,
-};
+use modnote::{crud::notebook::*, db::set_db_options};
 use sea_orm::Database;
 
 // A template for Rust CLI applications
@@ -36,7 +34,6 @@ enum Commands {
     Delete {
         #[command(subcommand)]
         subcommands: Option<Subcommands>,
-
         // #[arg(short, long, help = "Get all notebooks, notes, or tags")]
         // all: Option<bool>,
     },
@@ -71,7 +68,6 @@ enum Subcommands {
     },
 }
 
-
 #[tokio::main]
 async fn main() -> Result<()> {
     // connect to the database
@@ -84,13 +80,14 @@ async fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
-
         // Parse "New" Command
         Some(Commands::New { subcommands }) => match subcommands.as_ref().unwrap() {
             Subcommands::Notebook { name, desc } => {
-                if name.is_none() || desc.is_none() { println!("\nerror: name and description required to create new notebook. use --help for correct usage\n")}
-                else { 
-                    let name = name.to_owned().unwrap(); let desc = desc.to_owned().unwrap();
+                if name.is_none() || desc.is_none() {
+                    println!("\nerror: name and description required to create new notebook. use --help for correct usage\n")
+                } else {
+                    let name = name.to_owned().unwrap();
+                    let desc = desc.to_owned().unwrap();
                     create_notebook(db, name, desc).await?;
                     println!("Successfully created notebook");
                 }
@@ -111,15 +108,15 @@ async fn main() -> Result<()> {
                 if name.is_none() {
                     let notebooks = get_all_notebooks(db).await?;
                     for notebook in notebooks {
-                    println!("{:?}", notebook)
+                        println!("{:?}", notebook)
                     }
-                }
-                 else {
-                    let notebook = get_notebook_by_name(db, name.to_owned().unwrap_or_default()).await?;
+                } else {
+                    let notebook =
+                        get_notebook_by_name(db, name.to_owned().unwrap_or_default()).await?;
                     println!("{:?}", notebook)
                 }
             }
-            Subcommands::Note { name: _ , content: _ } => {
+            Subcommands::Note { name: _, content: _ } => {
                 println!("Note: ");
                 todo!("Implement get note functionality")
             }
@@ -144,17 +141,19 @@ async fn main() -> Result<()> {
 
         // // Parse "Del" Command
         Some(Commands::Delete { subcommands }) => match subcommands.as_ref().unwrap() {
-            Subcommands::Notebook { name , desc: _ } => {
+            Subcommands::Notebook { name, desc: _ } => {
                 if name.is_none() {
                     delete_all_notebooks(db).await?;
                     println!("Successfully deleted all notebooks");
-                }
-                 else {
+                } else {
                     delete_notebook_by_name(db, name).await?;
-                    println!("Successfully deleted notebook with name: {}", name.as_ref().unwrap_or(&"".to_string()));
+                    println!(
+                        "Successfully deleted notebook with name: {}",
+                        name.as_ref().unwrap_or(&"".to_string())
+                    );
                 }
             }
-            Subcommands::Note { name: _ , content: _ } => {
+            Subcommands::Note { name: _, content: _ } => {
                 println!("Note: ");
                 todo!("Implement delete note functionality")
             }

@@ -42,18 +42,21 @@ pub async fn update_notebook_by_name(db: &DbConn, name: Option<String>) -> Resul
         .unwrap();
     // Create an active model from the found notebook
     let mut book: notebooks::ActiveModel = book.unwrap().into();
+
     // Get new name from user input and update the active model
     println!("Enter new name for notebook:");
     let mut new_name = String::new();
     io::stdin().read_line(&mut new_name).expect("Failed to read line");
     let new_name = new_name.trim().to_string();
     book.notebook_name = Set(new_name);
-    //` Get new description from user input and update the active model
+
+    // Get new description from user input and update the active model
     let mut new_desc = String::new();
     println!("Enter new description for notebook:");
     io::stdin().read_line(&mut new_desc).expect("Failed to read line");
     let new_desc = new_desc.trim().to_string();
     book.description = Set(new_desc);
+
     // Save the updated notebook back to the database
     book.update(db).await.unwrap();
 

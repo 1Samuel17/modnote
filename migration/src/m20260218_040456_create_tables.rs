@@ -26,7 +26,7 @@ impl MigrationTrait for Migration {
                     .table("Notes")
                     .if_not_exists()
                     .col(pk_auto("id"))
-                    .col(string("note_name"))
+                    .col(string("title"))
                     .col(string("content"))
                     .to_owned(),
             )

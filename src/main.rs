@@ -1,6 +1,9 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use modnote::{crud::notebook::*, db::set_db_options};
+use modnote::{
+    crud::notebook::*,
+    crud::note::*,
+    db::set_db_options};
 use sea_orm::Database;
 
 // A template for Rust CLI applications
@@ -52,9 +55,9 @@ enum Subcommands {
     },
     /// Create a new note
     Note {
-        /// name of the note
-        #[arg(short, long, help = "Name of note")]
-        name: Option<String>,
+        /// title of the note
+        #[arg(short, long, help = "Title of note")]
+        title: Option<String>,
 
         /// content of the note
         #[arg(short, long, help = "Content of note")]
@@ -92,9 +95,15 @@ async fn main() -> Result<()> {
                     println!("Successfully created notebook");
                 }
             }
-            Subcommands::Note { name: _, content: _ } => {
-                println!("Note: ");
-                todo!("Implement create note functionality")
+            Subcommands::Note { title, content } => {
+                if title.is_none() || content.is_none() {
+                    println!("\nerror: title and content required to create new note. use --help for correct usage\n")
+                } else {
+                    let title = title.to_owned().unwrap();
+                    let content = content.to_owned().unwrap();
+                    create_note(db, title, content).await?;
+                    println!("Successfully created note");
+                }
             }
             Subcommands::Tag { name: _ } => {
                 println!("Tag: ");
@@ -116,7 +125,7 @@ async fn main() -> Result<()> {
                     println!("{:?}", notebook)
                 }
             }
-            Subcommands::Note { name: _, content: _ } => {
+            Subcommands::Note { title: _, content: _ } => {
                 println!("Note: ");
                 todo!("Implement get note functionality")
             }
@@ -131,7 +140,7 @@ async fn main() -> Result<()> {
             Subcommands::Notebook { name, desc: _ } => {
                 update_notebook_by_name(db, name.to_owned()).await?;
             }
-            Subcommands::Note { name: _, content: _ } => {
+            Subcommands::Note { title: _, content: _ } => {
                 println!("Note: ")
             }
             Subcommands::Tag { name: _ } => {
@@ -153,7 +162,7 @@ async fn main() -> Result<()> {
                     );
                 }
             }
-            Subcommands::Note { name: _, content: _ } => {
+            Subcommands::Note { title: _, content: _ } => {
                 println!("Note: ");
                 todo!("Implement delete note functionality")
             }
